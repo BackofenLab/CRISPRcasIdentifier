@@ -1,5 +1,5 @@
 """
-    CRISPRCasIdentifier
+    CRISPRcasIdentifier
     Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>, Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>
 
     This program is free software: you can redistribute it and/or modify
@@ -246,18 +246,21 @@ def convert_cassette_dataframes_to_numpy_arrays(cassette_dataframes, models_dir,
             cassette_arrays.append(array)
             n_missings.append(n_miss)
         
-        scaler = joblib.load(os.path.join(models_dir, hmm + '_scaler.joblib'))
-        cassette_arrays = np.array(cassette_arrays)
-        cassette_arrays = scaler.transform(cassette_arrays)
+        if cassette_arrays:
+            scaler = joblib.load(os.path.join(models_dir, hmm + '_scaler.joblib'))
+            cassette_arrays = np.array(cassette_arrays)
+            cassette_arrays = scaler.transform(cassette_arrays)
 
-        cassette_header = ' '.join(features)
-        cassette_file_path = os.path.join(cassette_output_dir, hmm + '_cassette_arrays.txt')
-        print('Saving Cascade to', cassette_file_path)
-        np.savetxt(os.path.join(cassette_output_dir, hmm + '_cassette_arrays.txt'), cassette_arrays, header=cassette_header)
+            cassette_header = ' '.join(features)
+            cassette_file_path = os.path.join(cassette_output_dir, hmm + '_cassette_arrays.txt')
+            print('Saving cassette(s) to', cassette_file_path)
+            np.savetxt(os.path.join(cassette_output_dir, hmm + '_cassette_arrays.txt'), cassette_arrays, header=cassette_header)
 
-        hmm_cassette_arrays[hmm] = cassette_arrays
-        hmm_features[hmm] = features
-        hmm_missings[hmm] = n_missings
+            hmm_cassette_arrays[hmm] = cassette_arrays
+            hmm_features[hmm] = features
+            hmm_missings[hmm] = n_missings
+        else:
+            print('CRISPRcasIdentifier could not find enough hits to build one or more cassettes for the input file and ', hmm, '.', sep='')
 
     return hmm_features, hmm_cassette_arrays, hmm_missings
 
@@ -339,13 +342,13 @@ def classify(models_dir, regressor_name, classifiers, hmm_cassettes, return_prob
                     pred_probs = pred[pred_class_idx]
                     sorted_idx = np.argsort(-pred_probs)
                     prob_str = ', '.join('{0} ({1:.3f})'.format(name, prob) for name, prob in zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
-                    print('Cascade #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], prob_str))
+                    print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], prob_str))
 
                     pred_label = list(zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
                 else:
                     pred = clf.predict(casc)
                     pred_label = encoder.inverse_transform(pred)[0]
-                    print('Cascade #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], pred_label))                    
+                    print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], pred_label))
                 
                 output_defaultdict['predicted_label'].append(pred_label)
 
@@ -406,18 +409,19 @@ if __name__ == '__main__':
     classifiers = [CLASSIFIERS[clf] for clf in args.classifiers]
     output_defaultdict = defaultdict(list)
 
-    if args.run_mode == 'classification':
-        print('Loading classifiers and running classification')            
-        classify(MODELS_DIR, '', classifiers, hmm_cassettes, args.probability, output_defaultdict)
+    if hmm_cassettes:
+        if args.run_mode == 'classification':
+            print('Loading classifiers and running classification')
+            classify(MODELS_DIR, '', classifiers, hmm_cassettes, args.probability, output_defaultdict)
 
-    else:
-        for reg in args.regressors:
-            hmm_cassettes_reg = predict_missings(MODELS_DIR, reg, hmm_features, hmm_cassettes, hmm_missings)
+        else:
+            for reg in args.regressors:
+                hmm_cassettes_reg = predict_missings(MODELS_DIR, reg, hmm_features, hmm_cassettes, hmm_missings)
 
-            if args.run_mode == 'mixed':
-                print('Loading classifiers and running classification') 
-                classify(MODELS_DIR, reg, classifiers, hmm_cassettes_reg, args.probability, output_defaultdict)
-    
-    print('Saving class predictions to', args.output_file)
-    output_df = pd.DataFrame(output_defaultdict)
-    output_df.to_csv(args.output_file, index=False)
+                if args.run_mode == 'mixed':
+                    print('Loading classifiers and running classification')
+                    classify(MODELS_DIR, reg, classifiers, hmm_cassettes_reg, args.probability, output_defaultdict)
+
+        print('Saving class predictions to', args.output_file)
+        output_df = pd.DataFrame(output_defaultdict)
+        output_df.to_csv(args.output_file, index=False)

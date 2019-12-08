@@ -14,7 +14,7 @@ Install pyenv
 curl https://pyenv.run | bash
 ```
 
-Add the following to ~/.bashrc
+Add the following to ~/.bashrc or to the respective rc file of the shell you use. For example, if you use Z shell (zsh) instead of bash, then add the following to ~/.zshrc
 
 ```
 export PATH="/home/$USER/.pyenv/bin:$PATH"
@@ -82,7 +82,7 @@ We provide three simple examples in the `examples` folder:
 
 ### License (GPLv3)
 
-    CRISPRCasIdentifier
+    CRISPRcasIdentifier
     Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
                        Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>
 
