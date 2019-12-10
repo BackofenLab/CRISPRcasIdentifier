@@ -36,6 +36,12 @@ Install library dependencies
 pip install -r requirements.txt
 ```
 
+After downloading all files, extract them in the same base folder using the following command:
+
+```
+cat *.tar.gz | tar -xzf - -i
+```
+
 ### How to use
 
 To list the available command line arguments type
