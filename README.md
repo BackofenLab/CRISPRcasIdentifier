@@ -6,7 +6,9 @@ CRISPRcasIdentifier is an effective machine learning approach for the identifica
 
 CRISPRcasIdentifier has been tested with Python 3.5.2. For library requirements, see requirements.txt. We recommend installing the same versions listed in such a file. Since we exported our classifiers using joblib.dump, it is not guaranteed that they will work properly if loaded using other Python and libraries versions. For such, we recommend the use of virtual environments, which make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
-The easiest way to install the correct python version and its dependencies to run CRISPRcasIdentifier is by using pyenv (https://github.com/pyenv/pyenv-virtualenv).
+### Setting up a virtual environment
+
+The easiest way to install the correct python version and its dependencies to run CRISPRcasIdentifier is by using [pyenv](https://github.com/pyenv/pyenv-virtualenv).
 
 Install pyenv
 
@@ -36,12 +38,6 @@ Install library dependencies
 pip install -r requirements.txt
 ```
 
-After downloading all files, extract them in the same base folder using the following command:
-
-```
-cat *.tar.gz | tar -xzf - -i
-```
-
 ### How to use
 
 To list the available command line arguments type
@@ -58,7 +54,7 @@ The available options are:
 
 * `-c clf1 clf2 ...` : list of classifiers to use (default: ERT).
 
-* `-p` : returns class probabilities. When the probability output is not required, the ML models always return the label with the maximum probability value (independent of how high the value of this probability is). When using the `-p` option, we want CRISPRcasIdentifier to give some clues to the user about how well a test cassette agrees with different subtypes (given that some subtypes have some Cas proteins in common). If the user wants to label a test example based on the probabilities, that must be done by assigning it to the subtype with the maximum probability value returned and not by using some threshold. Finally, for a given test example, the probabilities sum up to one.
+* `-p` : returns class probabilities. When the probability output is not required, the ML models always return the label with the maximum probability value (independent of how high the value of this probability is). When using the `-p` option, we want CRISPRcasIdentifier to give some clues to the user about how well a test cassette agrees with different subtypes (given that some subtypes have some Cas proteins in common). _If the user wants to label a test example based on the probabilities, that must be done by assigning it to the subtype with the maximum probability value returned and not by using some threshold_. Finally, for a given test example, the probabilities sum up to one.
 
 * `-s HMM1 HMM2 ...` : list of HMM models to use, from HMM1 to HMM5 (default: HMM1 HMM3 HMM5).
 
@@ -68,7 +64,7 @@ The available options are:
 
 * `-co` : cassette output directory (default: `./cassette`).
 
-* `-st` : sequence type contained in input fasta file, either `protein` or `dna` (default: `protein`). If `-st` is set to `protein`, CRISPRcasIdentifier assumes that the input fasta file contains only one cassette. For such, the expected cassette length is up to 15 proteins (more than that might produce unexpected results). If `-st` is set to `dna`, CRISPRcasIdentifier tries to build the protein cassettes after extracting the protein sequences using the Prodigal software. In this case, it CRISPRcasIdentifier may produce predictions for multiple cassettes. Also note that for DNA data, the option `-sc` must also be set.
+* `-st` : sequence type contained in input fasta file, either `protein` or `dna` (default: `protein`). If `-st` is set to `protein`, CRISPRcasIdentifier assumes that the input fasta file contains only one cassette. For such, the expected cassette length is up to 15 proteins (more than that might produce unexpected results). If `-st` is set to `dna`, CRISPRcasIdentifier tries to build the protein cassettes after extracting the protein sequences using the [Prodigal software](https://github.com/hyattpd/Prodigal) version 2.6.3 (unless the user is running our tool in a 32bit operating system, Prodigal is already included in the `software` folder and does not need to be installed by the user). In this case, CRISPRcasIdentifier may produce predictions for multiple cassettes. Also note that for DNA data, the option `-sc` _must_ also be set.
 
 * `-sc` : sequence completeness, either `complete` or `partial` (used only when `-st` is set to `dna`).
 
