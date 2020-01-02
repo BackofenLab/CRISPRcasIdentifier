@@ -30,7 +30,7 @@ from Bio import SeqIO
 # Project imports
 from prodigal import prodigal
 from hmmsearch import hmmsearch
-from synonyms import CAS_SYNONYM_LIST
+from cas import CAS_SYNONYM_LIST, CORE
 
 SEQUENCE_TYPES = {'dna', 'protein'}
 SEQUENCE_COMPLETENESS = {'complete', 'partial'}
@@ -199,7 +199,12 @@ def build_cassettes(annotated_protein_dataframes, sequence_type, max_gap=2, min_
                         else:
                             break
 
-                    cassettes.append(indices_cassette)
+                    protein_df_cassette = protein_df.loc[indices_cassette]
+                    unique_cassette_proteins = set(protein_df_cassette[protein_df_cassette['annotation'] != 'unknown']['annotation'])
+
+                    if len(unique_cassette_proteins) > 1 and len(unique_cassette_proteins.intersection(CORE)) >= 1:
+                        cassettes.append(indices_cassette)
+
                     gap = 0
                     cas_count = 0
                     indices_cassette = []
