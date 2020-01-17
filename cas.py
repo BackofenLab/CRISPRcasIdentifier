@@ -60,19 +60,7 @@ for k, i in CAS_SYNONYM_LIST.items():
 
 CAS_PATTERN = '((cas|csa|csb|csc|cse|csy|csf|csm|csx|all|cmr|csn|cpf|c2c|csh|csd|csp)(\d+|[B,D,E,X,Y,R])|DinG|dinG|ding|Ding|GSU0054|gsu0054|cst5t)'
 
-#CORE = set('csa1,csa2,cas3,csa4,cas5,cas6,cas7,cas9,cas10,csh1,csd1,csp2,csc3,csc2,'
-#'csc1,cse1,cse3,cse4,casB,cse2,casc,casD,casE,csy1,csy2,csy3,csy4,cst1,cst2,csn1,'
-#'csf2,csf3,c2c2,cas13,cpf1,cas12,c2c1,c2c3,casY,casX,c2c6,c2c7,csm3,csm4,csm5,cmr1,'
-#'cmr6,cmr4,cmr3'.split(','))
-
-#This is correct
-#CORE = set('cas1,cas2,cas3,cas4,cas5,cas6,cas7,cas8,cas9,cas10,cas10d,csn2,cas12a,cpf1,cas12e,casX,'
-#'cas12b1,c2c1,cas12b2,cas12c,c2c3,cas12d,casY,cas13a,c2c2,cas13b1,cas13b2,c2c6,cas13c,c2c7,cas13d,'
-#'csc2,csc1,cse1,cse2,cas11,csa5,csy1,csy2,csy3,csf4,DinG,csf5,csf1,csf3,csm2,csm3,csm4,csm5,cmr1,cmr3,cmr4,cmr5,cmr6'.split(','))
-
-# Now we use a signature genes
-CORE = set('cas5,cas7,cas8,cas9,cas10,cas10d,csn2,cas12a,cpf1,cas12e,casX,'
-'cas12b1,c2c1,cas12b2,cas12c,c2c3,cas12d,casY,cas13a,c2c2,cas13b1,cas13b2,c2c6,cas13c,c2c7,cas13d,'
-'csc2,csc1,cse1,cse2,cas11,csy1,csy2,csy3,csf5,csf1,csf3,csm2,csm3,csm4,csm5,cmr1,cmr3,cmr4,cmr5,cmr6'.split(','))
-
-
+CORE = set('cas3,cas5,cas7,cas8,cas9,cas10,csn2,cas12,'
+'cpf1,casX,c2c1,c2c3,casY,cas13,c2c2,c2c6,c2c7,csc2,csc1,cse1,cse2,cas11,'
+'csy1,csy2,csy3,csf5,csf1,csf3,csm2,csm3,csm4,csm5,cmr1,cmr3,'
+'cmr4,cmr5,cmr6'.split(','))
