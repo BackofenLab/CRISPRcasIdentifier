@@ -1,41 +1,28 @@
 ## CRISPRcasIdentifier
 
-CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas proteins. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.96 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.88 in our benchmarking agains other available tools.
+CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas proteins. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.96 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.88 in our benchmarking against other available tools.
 
 ### Requirements
 
-CRISPRcasIdentifier has been tested with Python 3.5.2. For library requirements, see requirements.txt. We recommend installing the same versions listed in such a file. Since we exported our classifiers using joblib.dump, it is not guaranteed that they will work properly if loaded using other Python and libraries versions. For such, we recommend the use of virtual environments, which make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
+CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using joblib.dump, it is not guaranteed that they will work properly if loaded using other Python and libraries versions. For such, we recommend the use of conda virtual environments, which make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
 ### Setting up a virtual environment
 
-The easiest way to install the correct python version and its dependencies to run CRISPRcasIdentifier is by using [pyenv](https://github.com/pyenv/pyenv-virtualenv).
+The easiest way to install the correct python version and its dependencies to run CRISPRcasIdentifier is by using [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
-Install pyenv
-
-```
-curl https://pyenv.run | bash
-```
-
-Add the following to ~/.bashrc or to the respective rc file of the shell you use. For example, if you use Z shell (zsh) instead of bash, then add the following to ~/.zshrc
+Install Miniconda
 
 ```
-export PATH="/home/$USER/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+chmod +x Miniconda3-latest-Linux-x86_64.sh
+./Miniconda3-latest-Linux-x86_64.sh
 ```
 
-Install python 3.5.2 using pyenv, create virtual environment, activate environment
+Create and activate environment for CRISPRcasIdentifier
 
 ```
-pyenv install -v 3.5.2
-pyenv virtualenv 3.5.2 crispr-cas-identifier_env
-pyenv activate crispr-cas-identifier_env
-```
-
-Install library dependencies
-
-```
-pip install -r requirements.txt
+conda env create -f crispr-env.yml -n crispr-env
+conda activate crispr-env
 ```
 
 ### How to use

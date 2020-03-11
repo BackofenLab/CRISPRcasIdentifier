@@ -19,7 +19,6 @@
 import os, tarfile, glob
 import subprocess as sp
 import joblib
-import warnings
 import numpy as np
 import pandas as pd
 import itertools
@@ -47,6 +46,7 @@ PRODIGAL = BASE_DIR + '/software/prodigal/prodigal'
 MODELS_DIR = BASE_DIR + '/models'
 MODELS_TAR_GZ = BASE_DIR + '/models.tar.gz'
 HMM_TAR_GZ = BASE_DIR + '/HMM_sets.tar.gz'
+MAX_N_MISS = 2
 
 def cmd_exists(cmd):
     return sp.call(['type', cmd], shell=True, stdout=sp.PIPE, stderr=sp.PIPE) == 0
@@ -277,45 +277,50 @@ def predict_missings(models_dir, regressor, hmm_features, hmm_cassettes, hmm_mis
 
     for hmm in sorted(hmm_missings):
         for id_, n_miss in enumerate(hmm_missings[hmm]):
-            if n_miss == 0:
-                print('There are no unlabeled proteins for cassette #', id_ + 1, 'and', hmm)
-            elif n_miss == 1:
-                print('There is', n_miss, 'unlabeled protein for cassette #', id_ + 1, 'and', hmm)
-            else:
-                print('There are', n_miss, 'unlabeled proteins for cassette #', id_ + 1, 'and', hmm)
-            
-            if n_miss > 2:
-                warnings.warn('More than 2 missing proteins. Predictions will likely be weak.')
-
             cassette = np.copy(hmm_cassettes[hmm][id_])
 
-            if n_miss:
-                zeros_idx = np.where(cassette == 0.0)[0]
-                features = hmm_features[hmm]
-                features_to_test = features[zeros_idx]
+            if np.any(cassette > 0.0):
+                if n_miss == 0:
+                    print('There are no unlabeled proteins for cassette #', id_ + 1, 'and', hmm)
+                elif n_miss == 1:
+                    print('There is', n_miss, 'unlabeled protein for cassette #', id_ + 1, 'and', hmm)
+                else:
+                    print('There are', n_miss, 'unlabeled proteins for cassette #', id_ + 1, 'and', hmm)
+                
+                if n_miss > MAX_N_MISS:
+                    print('More than ' + str(MAX_N_MISS) + ' missing proteins. Regression predictions will likely be weak.')
 
-                predictions = []
+                if n_miss:
+                    zeros_idx = np.where(cassette == 0.0)[0]
+                    features = hmm_features[hmm]
+                    features_to_test = features[zeros_idx]
 
-                for j, f in zip(zeros_idx, features_to_test):
-                    reg = joblib.load(os.path.join(models_dir, hmm + '_' + reg_name + '_' + f + '.joblib'))
-                    cassette_f = np.delete(cassette, j)
-                    pred = reg.predict(np.expand_dims(cassette_f, axis=0))[0]
-                    predictions.append((j, f, pred))
+                    predictions = []
 
-                predictions = sorted(predictions, key=lambda x : -x[-1])
+                    for j, f in zip(zeros_idx, features_to_test):
+                        reg = joblib.load(os.path.join(models_dir, hmm + '_' + reg_name + '_' + f + '.joblib'))
+                        cassette_f = np.delete(cassette, j)
+                        pred = reg.predict(np.expand_dims(cassette_f, axis=0))[0]
+                        predictions.append((j, f, pred))
 
-                for i in range(n_miss):
-                    j, f, pred = predictions[i]
-                    print('{0} missing bit-score prediction for cassette #{1}, {2} and {3} ({4}/{5}): {6:.3f}'.format(regressor, id_ + 1, hmm, f, i + 1, n_miss, pred))
-                    cassette[j] = pred # because cassette is a 2d 1 x m array
+                    predictions = sorted(predictions, key=lambda x : -x[-1])
+
+                    for i in range(n_miss):
+                        j, f, pred = predictions[i]
+                        print('{0} missing bit-score prediction for cassette #{1}, {2} and {3} ({4}/{5}): {6:.3f}'.format(regressor, id_ + 1, hmm, f, i + 1, n_miss, pred))
+                        cassette[j] = pred # because cassette is a 2d 1 x m array
+                
+                filled_cassettes[hmm].append(cassette)
             
-            filled_cassettes[hmm].append(cassette)
-
+            else:
+                print('Cassette #' + str(id_ + 1) + ' is either empty or composed only by unknown proteins for ' + hmm + '. '
+                      'Regressors are not able to predict anything.')
+            
             print('-' * 50)
 
     return filled_cassettes
 
-def classify(models_dir, regressor_name, classifiers, hmm_cassettes, return_probability, output_defaultdict):    
+def classify(models_dir, regressor_name, classifiers, hmm_cassettes, return_probability, hmm_missings, output_defaultdict):
     for hmm in sorted(hmm_cassettes):
         cassette = hmm_cassettes[hmm]
         encoder = joblib.load(os.path.join(models_dir, hmm + '_encoder.joblib'))
@@ -323,41 +328,49 @@ def classify(models_dir, regressor_name, classifiers, hmm_cassettes, return_prob
         if regressor_name:
             print('Predictions for', hmm, 'and', regressor_name, 'regressor\n')
         else:
-            print('Predictions for', hmm, 'without regression\n')    
+            print('Predictions for', hmm, 'without regression\n')
 
         for ci, casc in enumerate(cassette):
-            casc = np.expand_dims(casc, axis=0)
-            
-            for clf_name in classifiers:
-                # saving output information ------------------------
-                output_defaultdict['HMM'].append(hmm)
-                output_defaultdict['cassette_id'].append(ci + 1)
-                output_defaultdict['classifier'].append(CLASSIFIERS_INV[clf_name])
+            if np.any(casc > 0.0):
+                if not regressor_name and hmm_missings[hmm][ci] > MAX_N_MISS:
+                    print('More than ' + str(MAX_N_MISS) + ' missing proteins. Classification predictions will likely be weak.')
 
-                if regressor_name:
-                    output_defaultdict['regressor'].append(regressor_name)
-                # --------------------------------------------------
-
-                clf = joblib.load(os.path.join(models_dir, hmm + '_' + clf_name + '.joblib'))
-
-                if return_probability:
-                    pred = clf.predict_proba(casc)
-                    pred_class_idx = np.where(pred > 0.0)
-                    pred_class_names = encoder.inverse_transform(pred_class_idx[1])
-                    pred_probs = pred[pred_class_idx]
-                    sorted_idx = np.argsort(-pred_probs)
-                    prob_str = ', '.join('{0} ({1:.3f})'.format(name, prob) for name, prob in zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
-                    print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], prob_str))
-
-                    pred_label = list(zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
-                else:
-                    pred = clf.predict(casc)
-                    pred_label = encoder.inverse_transform(pred)[0]
-                    print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], pred_label))
+                casc = np.expand_dims(casc, axis=0)
                 
-                output_defaultdict['predicted_label'].append(pred_label)
+                for clf_name in classifiers:
+                    # saving output information ------------------------
+                    output_defaultdict['HMM'].append(hmm)
+                    output_defaultdict['cassette_id'].append(ci + 1)
+                    output_defaultdict['classifier'].append(CLASSIFIERS_INV[clf_name])
+
+                    if regressor_name:
+                        output_defaultdict['regressor'].append(regressor_name)
+                    # --------------------------------------------------
+
+                    clf = joblib.load(os.path.join(models_dir, hmm + '_' + clf_name + '.joblib'))
+
+                    if return_probability:
+                        pred = clf.predict_proba(casc)
+                        pred_class_idx = np.where(pred > 0.0)
+                        pred_class_names = encoder.inverse_transform(pred_class_idx[1])
+                        pred_probs = pred[pred_class_idx]
+                        sorted_idx = np.argsort(-pred_probs)
+                        prob_str = ', '.join('{0} ({1:.3f})'.format(name, prob) for name, prob in zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
+                        print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], prob_str))
+
+                        pred_label = list(zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
+                    else:
+                        pred = clf.predict(casc)
+                        pred_label = encoder.inverse_transform(pred)[0]
+                        print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], pred_label))
+                    
+                    output_defaultdict['predicted_label'].append(pred_label)
 
                 print()
+            
+            else:
+                print('Cassette #' + str(ci + 1) + ' is either empty or composed only by unknown proteins for ' + hmm + '. '
+                      'Classifiers are not able to predict anything.')
 
         print('-' * 50)
 
@@ -417,7 +430,7 @@ if __name__ == '__main__':
     if hmm_cassettes:
         if args.run_mode == 'classification':
             print('Loading classifiers and running classification')
-            classify(MODELS_DIR, '', classifiers, hmm_cassettes, args.probability, output_defaultdict)
+            classify(MODELS_DIR, '', classifiers, hmm_cassettes, args.probability, hmm_missings, output_defaultdict)
 
         else:
             for reg in args.regressors:
@@ -425,8 +438,11 @@ if __name__ == '__main__':
 
                 if args.run_mode == 'mixed':
                     print('Loading classifiers and running classification')
-                    classify(MODELS_DIR, reg, classifiers, hmm_cassettes_reg, args.probability, output_defaultdict)
+                    classify(MODELS_DIR, reg, classifiers, hmm_cassettes_reg, args.probability, hmm_missings, output_defaultdict)
 
-        print('Saving class predictions to', args.output_file)
-        output_df = pd.DataFrame(output_defaultdict)
-        output_df.to_csv(args.output_file, index=False)
+        if output_defaultdict:
+            print('Saving class predictions to', args.output_file)
+            output_df = pd.DataFrame(output_defaultdict)
+            output_df.to_csv(args.output_file, index=False)
+        else:
+            print('No predictions were made.')
