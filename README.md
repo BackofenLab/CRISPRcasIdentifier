@@ -25,6 +25,15 @@ conda env create -f crispr-env.yml -n crispr-env
 conda activate crispr-env
 ```
 
+### Downloading the Machine Learning (ML) models
+
+Due to GitHub's file size constraints, we made the ML models available in Google Drive. You can download and extract them by using the following commands (save and extract them in CRISPRcasIdentifier's folder).
+
+```
+wget https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing
+tar -xzf trained_models_2015.tar.gz
+```
+
 ### How to use
 
 To list the available command line arguments type
