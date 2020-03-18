@@ -379,10 +379,10 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-f', '--fasta', dest='fasta_file', help='Fasta file path', metavar='sequences.fa')
-    parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors (CART, ERT and SVM), default: ERT', default='ERT', metavar='reg1')
-    parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers (CART, ERT and SVM), default: ERT', default='ERT', metavar='clf1')
+    parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors (CART, ERT and SVM), default: ERT', default='ERT', metavar='reg')
+    parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers (CART, ERT and SVM), default: ERT', default='ERT', metavar='clf')
     parser.add_argument('-p', '--class-probabilities', dest='probability', action='store_true', help='Whether to return class probabilities')
-    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets (from HMM1 to HMM5), default: HMM1', metavar='HMM_set', default='HMM1 HMM3 HMM5'.split())
+    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets (from HMM1 to HMM5), default: HMM3', metavar='HMM_set', default='HMM3')
     parser.add_argument('-hp', '--hmmsearch-path', nargs='?', dest='hmmsearch_cmd', help='hmmsearch binary path, default: ./software/hmmer/hmmsearch', default=HMM_SEARCH)
     parser.add_argument('-ho', '--hmmsearch-output-dir', nargs='?', dest='hmmsearch_output_dir', default='hmmsearch_output')
     parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', default='cassette')

@@ -52,7 +52,7 @@ The available options are:
 
 * `-p` : returns class probabilities. When the probability output is not required, the ML models always return the label with the maximum probability value (independent of how high the value of this probability is). When using the `-p` option, we want CRISPRcasIdentifier to give some clues to the user about how well a test cassette agrees with different subtypes (given that some subtypes have some Cas proteins in common). _If the user wants to label a test example based on the probabilities, that must be done by assigning it to the subtype with the maximum probability value returned and not by using some threshold_. Finally, for a given test example, the probabilities sum up to one.
 
-* `-s HMM1 HMM2 ...` : list of HMM models to use, from HMM1 to HMM5 (default: HMM1 HMM3 HMM5).
+* `-s HMM1 HMM2 ...` : list of HMM models to use, from HMM1 to HMM5 (default: HMM3).
 
 * `-hp` : hmmsearch binary path (default: `./software/hmmer/hmmsearch`).
 
