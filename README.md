@@ -109,7 +109,7 @@ The available options are:
 
 * `-o` : output csv file path (default: `CRISPRcasIdentifier_output.csv`).
 
-### Examples
+## Examples
 
 We provide three simple examples in the `examples` folder:
 
@@ -119,7 +119,7 @@ We provide three simple examples in the `examples` folder:
     * `python CRISPRcasIdentifier.py -f examples/example1.fa`
     * `python CRISPRcasIdentifier.py -f examples/example2.fa`
 
-### License (GPLv3)
+## License (GPLv3)
 
     CRISPRcasIdentifier
     Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
