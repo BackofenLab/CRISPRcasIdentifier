@@ -16,7 +16,7 @@ git clone https://github.com/BackofenLab/CRISPRcasIdentifier.git
 
 Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/166bh1sAjoB9kW5pn8YrEuEWrsM2QDV78/view?usp=sharing) and [here](https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's folder. It is not necessary to extract them, since the tool will do that the first time it is run.
 
-Next, you can choose which third step to follow: either using a [docker](###third-step-(docker)) container or using [conda](###third-step-(conda)).
+Next, you can choose which third step to follow: either using a [docker](#third-step-docker) container or using [conda](#third-step-conda).
 
 ### Third step (docker)
 
@@ -54,7 +54,7 @@ You can also copy a local fasta input file to CRISPRcasIdentifier's container by
 docker cp file.fa CONTAINER_ID:/home/CRISPRcasIdentifier
 ```
 
-After this, everything should be set up and you can skip to [How to use](##how-to-use).
+After this, everything should be set up and you can skip to [How to use](#how-to-use).
 
 ### Third step (conda)
 
