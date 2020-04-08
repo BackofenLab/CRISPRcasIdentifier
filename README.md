@@ -4,38 +4,31 @@ CRISPRcasIdentifier is an effective machine learning approach for the identifica
 
 ## Installation and requirements
 
-CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using [joblib.dump](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or libraries versions. For such, we recommend the use of our docker image or conda virtual environments, which make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
+CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using [joblib.dump](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or libraries versions. For such, we recommend the use of our ready-to-run docker image, to build the docker image from our Dockerfile or to set a conda virtual environment up. All options make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
-### First step: clone this repository
+### If you prefer to use our ready-to-run DockerHub image
 
-```
-git clone https://github.com/BackofenLab/CRISPRcasIdentifier.git
-```
+This is (probably) the easiest way to set CRISPRcasIdentifier up.
 
-### Second step: download the Hidden Markov (HMM) and Machine Learning (ML) models
+First, you need to install docker (please refer to its [installation guideline](https://docs.docker.com/get-docker/) for details).
 
-Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/166bh1sAjoB9kW5pn8YrEuEWrsM2QDV78/view?usp=sharing) and [here](https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's folder. It is not necessary to extract them, since the tool will do that the first time it is run.
+#### Pulling and running
 
-Next, you can choose which third step to follow: either using a [docker](#third-step-docker) container or using [conda](#third-step-conda).
-
-### Third step (docker)
-
-The easiest way to run CRISPRcasIdentifier is by using docker (please refer to its [installation guideline](https://docs.docker.com/get-docker/) for details).
-
-After installing docker, build an image from the Dockerfile
+Pull our image from DockerHub
 
 ```
-cd CRISPRcasIdentifier
-docker build -t crispr-cas-identifier .
+docker pull padilha/crispr-cas-identifier:0.0.1
 ```
 
 Run the docker image in a new container
 
 ```
-docker run -it crispr-cas-identifier:latest /bin/bash
+docker run -it padilha/crispr-cas-identifier:0.0.1 /bin/bash
 ```
 
-To avoid creating multiple containers everytime you want to use CRISPRcasIdentifier, you can reuse the created container by using the following commands
+#### Reusing a docker container
+
+You can reuse the created container by using the following commands
 
 ```
 docker restart CONTAINER_ID
@@ -56,7 +49,42 @@ docker cp file.fa CONTAINER_ID:/home/CRISPRcasIdentifier
 
 After this, everything should be set up and you can skip to [How to use](#how-to-use).
 
-### Third step (conda)
+### If, for some reason, you do not want to use our DockerHub image
+
+#### First step: clone this repository
+
+```
+git clone https://github.com/BackofenLab/CRISPRcasIdentifier.git
+```
+
+#### Second step: download the Hidden Markov (HMM) and Machine Learning (ML) models
+
+Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/166bh1sAjoB9kW5pn8YrEuEWrsM2QDV78/view?usp=sharing) and [here](https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's folder. It is not necessary to extract them, since the tool will do that the first time it is run.
+
+Next, you can choose which third step to follow: either [building our docker image](#third-step-docker) or [setting up a conda environment](#third-step-conda).
+
+#### Third step (docker)
+
+First, you need to install docker (please refer to its [installation guideline](https://docs.docker.com/get-docker/) for details).
+
+Build an image from the Dockerfile
+
+```
+cd CRISPRcasIdentifier
+docker build -t crispr-cas-identifier .
+```
+
+Run the docker image in a new container
+
+```
+docker run -it crispr-cas-identifier:latest /bin/bash
+```
+
+To avoid creating multiple containers everytime you want to use CRISPRcasIdentifier, see [Reusing a docker container](#reusing-a-docker-container).
+
+After this, everything should be set up and you can skip to [How to use](#how-to-use).
+
+#### Third step (conda)
 
 Another way to install the correct python version and its dependencies to run CRISPRcasIdentifier is by using [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
@@ -74,6 +102,8 @@ Create and activate environment for CRISPRcasIdentifier
 conda env create -f crispr-env.yml -n crispr-env
 conda activate crispr-env
 ```
+
+After this, everything should be set up and you can skip to [How to use](#how-to-use).
 
 ## How to use
 
