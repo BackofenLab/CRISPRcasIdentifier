@@ -1,10 +1,10 @@
 ## CRISPRcasIdentifier
 
-CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas proteins. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.96 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.88 in our benchmarking against other available tools.
+CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas proteins. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.95 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.88 in our benchmarking against other available tools.
 
 ### Requirements
 
-CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using joblib.dump, it is not guaranteed that they will work properly if loaded using other Python and libraries versions. For such, we recommend the use of conda virtual environments, which make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
+CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using [joblib.dump](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or libraries versions. For such, we recommend the use of conda virtual environments, which make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
 ### Setting up a virtual environment
 
@@ -66,7 +66,7 @@ The available options are:
 
 * `-m` : run mode, either `classification`, or `regression` or `mixed`.
 
-* `-o` : output csv file path (default: `CrisprCasIdentifier_output.csv`).
+* `-o` : output csv file path (default: `CRISPRcasIdentifier_output.csv`).
 
 ### Examples
 
@@ -75,14 +75,17 @@ We provide three simple examples in the `examples` folder:
 * `NC_013722.fasta` : DNA example. That must be run as `python CRISPRcasIdentifier.py -f examples/NC_013722.fasta -st dna -sc complete`
 
 * `example1.fa` and `example2.fa` : Protein examples. Those must be run as:
-    * `python CRISPRcasIdentifier.py -f examples/example1.fasta`
-    * `python CRISPRcasIdentifier.py -f examples/example2.fasta`
+    * `python CRISPRcasIdentifier.py -f examples/example1.fa`
+    * `python CRISPRcasIdentifier.py -f examples/example2.fa`
 
 ### License (GPLv3)
 
     CRISPRcasIdentifier
     Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
-                       Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>
+                       Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>,
+                       Shiraz Ali Shah <shiraz.shah@dbac.dk>,
+                       André Carlos Ponce de Leon Ferreira de Carvalho <andre@icmc.usp.br>,
+                       Rolf Backofen <backofen@informatik.uni-freiburg.de>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

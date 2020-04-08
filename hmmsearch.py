@@ -1,8 +1,12 @@
 """
     CRISPRCasIdentifier
-    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>, Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>
+    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
+                       Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>,
+                       Shiraz Ali Shah <shiraz.shah@dbac.dk>,
+                       André Carlos Ponce de Leon Ferreira de Carvalho <andre@icmc.usp.br>,
+                       Rolf Backofen <backofen@informatik.uni-freiburg.de>
 
-    This file is part of CRISPRCasIdentifier.
+    This file is part of CRISPRcasIdentifier.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

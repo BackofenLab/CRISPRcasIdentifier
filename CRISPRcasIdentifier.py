@@ -1,6 +1,12 @@
 """
     CRISPRcasIdentifier
-    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>, Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>
+    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
+                       Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>,
+                       Shiraz Ali Shah <shiraz.shah@dbac.dk>,
+                       André Carlos Ponce de Leon Ferreira de Carvalho <andre@icmc.usp.br>,
+                       Rolf Backofen <backofen@informatik.uni-freiburg.de>
+
+    This file is part of CRISPRcasIdentifier.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,8 +49,8 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 HMM_DIR = BASE_DIR + '/HMM_sets'
 HMM_SEARCH = BASE_DIR + '/software/hmmer/hmmsearch'
 PRODIGAL = BASE_DIR + '/software/prodigal/prodigal'
-MODELS_DIR = BASE_DIR + '/models'
-MODELS_TAR_GZ = BASE_DIR + '/models.tar.gz'
+MODELS_DIR = BASE_DIR + '/trained_models_2015'
+MODELS_TAR_GZ = BASE_DIR + '/trained_models_2015.tar.gz'
 HMM_TAR_GZ = BASE_DIR + '/HMM_sets.tar.gz'
 MAX_N_MISS = 2
 
