@@ -1,7 +1,0 @@
-name : crispr-cas-identifier_evn
-dependencies:
- - python=3.7.3
- - scikit-learn==0.21.1
- - numpy==1.16.3
- - joblib==0.13.2
- - biopython=1.74
