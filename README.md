@@ -25,14 +25,9 @@ conda env create -f crispr-env.yml -n crispr-env
 conda activate crispr-env
 ```
 
-### Downloading the Machine Learning (ML) models
+### Downloading the Hidden Markov (HMM) and Machine Learning (ML) models
 
-Due to GitHub's file size constraints, we made the ML models available in Google Drive. You can download and extract them by using the following commands (save and extract them in CRISPRcasIdentifier's folder).
-
-```
-wget https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing
-tar -xzf trained_models_2015.tar.gz
-```
+Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/166bh1sAjoB9kW5pn8YrEuEWrsM2QDV78/view?usp=sharing) and [here](https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's folder. It is not necessary to extract them, since CRISPRcasIdentifier will do that the first time it is run.
 
 ### How to use
 

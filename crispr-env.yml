@@ -4,9 +4,10 @@ channels:
 dependencies:
   - _libgcc_mutex=0.1=main
   - backcall=0.1.0=py37_0
+  - biopython=1.73=py37h7b6447c_0
   - blas=1.0=mkl
-  - ca-certificates=2019.11.27=0
-  - certifi=2019.11.28=py37_0
+  - ca-certificates=2020.1.1=0
+  - certifi=2020.4.5.1=py37_0
   - cycler=0.10.0=py37_0
   - dbus=1.13.12=h746ee38_0
   - decorator=4.4.1=py_0
@@ -42,7 +43,7 @@ dependencies:
   - ncurses=6.1=he6710b0_1
   - numpy=1.17.4=py37hc1035e2_0
   - numpy-base=1.17.4=py37hde5b4d6_0
-  - openssl=1.1.1d=h7b6447c_3
+  - openssl=1.1.1f=h7b6447c_0
   - pandas=0.25.3=py37he6710b0_0
   - parso=0.5.2=py_0
   - pcre=8.43=he6710b0_0
