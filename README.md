@@ -4,87 +4,59 @@ CRISPRcasIdentifier is an effective machine learning approach for the identifica
 
 ## Installation and requirements
 
-CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using [joblib.dump](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or libraries versions. For such, we recommend the use of our ready-to-run docker image, to build the docker image from our Dockerfile or to set a conda virtual environment up. All options make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
+CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using [joblib.dump](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or libraries versions. For such, we recommend the use of our docker image or conda virtual environments. They make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
-### If you prefer to use our ready-to-run DockerHub image
-
-This is (probably) the easiest way to set CRISPRcasIdentifier up.
-
-First, you need to install docker (please refer to its [installation guideline](https://docs.docker.com/get-docker/) for details).
-
-#### Pulling and running
-
-Pull our image from DockerHub
-
-```
-docker pull padilha/crispr-cas-identifier:0.0.1
-```
-
-Run the docker image in a new container
-
-```
-docker run -it padilha/crispr-cas-identifier:0.0.1 /bin/bash
-```
-
-#### Reusing a docker container
-
-You can reuse the created container by using the following commands
-
-```
-docker restart CONTAINER_ID
-docker exec -it CONTAINER_ID /bin/bash
-```
-
-You can obtain the CONTAINER_ID by using
-
-```
-docker ps --all
-```
-
-You can also copy a local fasta input file to CRISPRcasIdentifier's container by using
-
-```
-docker cp file.fa CONTAINER_ID:/home/CRISPRcasIdentifier
-```
-
-After this, everything should be set up and you can skip to [How to use](#how-to-use).
-
-### If, for some reason, you do not want to use our DockerHub image
-
-#### First step: clone this repository
+### First step: clone this repository
 
 ```
 git clone https://github.com/BackofenLab/CRISPRcasIdentifier.git
 ```
 
-#### Second step: download the Hidden Markov (HMM) and Machine Learning (ML) models
+### Second step: download the Hidden Markov (HMM) and Machine Learning (ML) models
 
 Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/166bh1sAjoB9kW5pn8YrEuEWrsM2QDV78/view?usp=sharing) and [here](https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's folder. It is not necessary to extract them, since the tool will do that the first time it is run.
 
-Next, you can choose which third step to follow: either [building our docker image](#third-step-docker) or [setting up a conda environment](#third-step-conda).
+Next, you can choose which third step to follow: either [using a docker container](#third-step-docker) or [using a conda environment](#third-step-conda).
 
-#### Third step (docker)
+### Third step (docker)
 
-First, you need to install docker (please refer to its [installation guideline](https://docs.docker.com/get-docker/) for details).
+First, you need to install docker (please refer to its [installation guideline](https://docs.docker.com/get-docker/) for details). Next, you can either [pull our image from DockerHub](#pull-the-image-from-dockerhub) or [build the image manually](#build-the-image).
 
-Build an image from the Dockerfile
-
-```
-cd CRISPRcasIdentifier
-docker build -t crispr-cas-identifier .
-```
-
-Run the docker image in a new container
+#### Pull the image from DockerHub
 
 ```
-docker run -it crispr-cas-identifier:latest /bin/bash
+docker pull padilha/crispr-cas-identifier:0.0.1
 ```
 
-To avoid creating multiple containers everytime you want to use CRISPRcasIdentifier, see [Reusing a docker container](#reusing-a-docker-container).
+Inside CRISPRcasIdentifier's folder, run the docker image.
+
+```
+docker run --rm -v "$(pwd):/home/crispr/CRISPRcasIdentifier" -it padilha/crispr-cas-identifier:0.0.1 /bin/bash
+```
+
+Since we are using the volume option (-v), CRISPRcasIdentifier's folder will be shared between the host machine and the docker container. Thus, there is no need to move files from one to the other.
 
 After this, everything should be set up and you can skip to [How to use](#how-to-use).
 
-#### Third step (conda)
+#### Build the image
+
+Inside CRISPRcasIdentifier's folder, build the image from the Dockerfile.
+
+```
+docker build -t crispr-cas-identifier .
+```
+
+Inside CRISPRcasIdentifier's folder, run the docker image.
+
+```
+docker run --rm -v "$(pwd):/home/crispr/CRISPRcasIdentifier" -it crispr-cas-identifier:latest /bin/bash
+```
+
+Since we are using the volume option (-v), CRISPRcasIdentifier's folder will be shared between the host machine and the docker container. Thus, there is no need to move files from one to the other.
+
+After this, everything should be set up and you can skip to [How to use](#how-to-use).
+
+### Third step (conda)
 
 Another way to install the correct python version and its dependencies to run CRISPRcasIdentifier is by using [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
