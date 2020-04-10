@@ -3,7 +3,6 @@ channels:
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=main
-  - biopython=1.73=py37h7b6447c_0
   - blas=1.0=openblas
   - ca-certificates=2020.1.1=0
   - certifi=2020.4.5.1=py37_0

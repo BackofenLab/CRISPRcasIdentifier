@@ -30,7 +30,6 @@ import pandas as pd
 import itertools
 
 from collections import defaultdict
-from Bio import SeqIO
 
 # Project imports
 from prodigal import prodigal

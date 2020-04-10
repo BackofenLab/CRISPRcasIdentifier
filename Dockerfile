@@ -19,9 +19,14 @@ RUN rm Miniconda3-latest-Linux-x86_64.sh
 ENV PATH ~/miniconda3/bin:$PATH
 
 # creating CRISPRcasIdentifier's env and making it active by default
+# and removing additional unnecessary files (see https://jcristharif.com/conda-docker-tips.html)
+ENV PYTHONDONTWRITEBYTECODE=true
 COPY crispr-env.yml ./
 RUN conda env create -f crispr-env.yml -n crispr-env
-RUN conda clean --all --yes
+RUN conda clean --all --yes \
+    && find ~/miniconda3/ -follow -type f -name '*.a' -delete \
+    && find ~/miniconda3/ -follow -type f -name '*.pyc' -delete \
+    && find ~/miniconda3/ -follow -type f -name '*.js.map' -delete
 RUN rm crispr-env.yml
 RUN echo "source ~/miniconda3/etc/profile.d/conda.sh && conda activate crispr-env" >> ~/.bashrc
 
