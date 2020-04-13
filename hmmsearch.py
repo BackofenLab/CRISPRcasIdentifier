@@ -1,6 +1,6 @@
 """
     CRISPRCasIdentifier
-    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
+    Copyright (C) 2020 Victor Alexandre Padilha <victorpadilha@usp.br>,
                        Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>,
                        Shiraz Ali Shah <shiraz.shah@dbac.dk>,
                        André Carlos Ponce de Leon Ferreira de Carvalho <andre@icmc.usp.br>,

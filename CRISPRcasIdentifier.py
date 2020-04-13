@@ -1,6 +1,6 @@
 """
     CRISPRcasIdentifier
-    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
+    Copyright (C) 2020 Victor Alexandre Padilha <victorpadilha@usp.br>,
                        Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>,
                        Shiraz Ali Shah <shiraz.shah@dbac.dk>,
                        André Carlos Ponce de Leon Ferreira de Carvalho <andre@icmc.usp.br>,
@@ -46,55 +46,31 @@ N_HMM_SETS = 5
 HMM_SETS = {'HMM' + str(i + 1) for i in range(N_HMM_SETS)}
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 HMM_DIR = BASE_DIR + '/HMM_sets'
-HMM_SEARCH = BASE_DIR + '/software/hmmer/hmmsearch'
-PRODIGAL = BASE_DIR + '/software/prodigal/prodigal'
 MODELS_DIR = BASE_DIR + '/trained_models_2015'
 MODELS_TAR_GZ = BASE_DIR + '/trained_models_2015.tar.gz'
 HMM_TAR_GZ = BASE_DIR + '/HMM_sets.tar.gz'
+HMMSEARCH = 'hmmsearch'
+PRODIGAL = 'prodigal'
 MAX_N_MISS = 2
 
 def cmd_exists(cmd):
-    return sp.call(['type', cmd], shell=True, stdout=sp.PIPE, stderr=sp.PIPE) == 0
+    if sp.call(cmd, shell=True, stdout=sp.PIPE, stderr=sp.PIPE) != 0:
+        raise FileNotFoundError(f'{cmd} not found in PATH')
 
-def validate_args(args):
-    if not os.path.exists(args.fasta_file):
-        raise ValueError('{} does not exist'.format(args.fasta_file))
+def to_list(s):
+    if isinstance(s, str):
+        return [s]
+    return s
 
-    if type(args.regressors) == str:
-        args.regressors = [args.regressors]
-
-    for reg in args.regressors:
-        if reg not in REGRESSORS:
-            raise ValueError('{} not a valid regressor, must be one of {}'.format(reg, tuple(REGRESSORS.keys())))
-
-    if type(args.classifiers) == str:
-        args.classifiers = [args.classifiers]
-
-    for clf in args.classifiers:
-        if clf not in CLASSIFIERS:
-            raise ValueError('{} not a valid classifier, must be one of {}'.format(clf, tuple(CLASSIFIERS.keys())))
-
-    if type(args.hmm_sets) == str:
-        args.hmm_sets = [args.hmm_sets]
-
-    for hmm in args.hmm_sets:
-        if hmm not in HMM_SETS:
-            raise ValueError('{} not a valid HMM set, must be one of {}'.format(hmm, HMM_SETS))
-
-    if not cmd_exists(args.hmmsearch_cmd):
-        raise ValueError('{} not found or not in PATH'.format(args.hmmsearch_cmd))
-    
-    if args.sequence_type not in SEQUENCE_TYPES:
-        raise ValueError('{} not a valid sequence type, must be one of {}'.format(SEQUENCE_TYPES))
-    
-    if args.run_mode not in RUN_MODES:
-        raise ValueError('{} not a valid run mode, must be one of {}'.format(RUN_MODES))
-    
-    if args.sequence_completeness not in SEQUENCE_COMPLETENESS:
-        raise ValueError('{} not a valid sequence completeness option, must be one of {}'.format(SEQUENCE_COMPLETENESS))
+def extract_targz(targz_file_path):
+    if not os.path.exists(targz_file_path):
+        raise ValueError(f'{targz_file_path} file not found. You should download it from our Google Drive. See README.md for details.')
+    else:
+        print('Extracting', targz_file_path)
+        with tarfile.open(targz_file_path, 'r:gz') as tar:
+            tar.extractall()
 
 def parse_protein_id_from_dna(line):
-    # print(line)
     id_first_part, start, end, strand, id_second_part = line.split('#')
     id_first_part = id_first_part.replace('>', '').strip()
     start = int(start.strip())
@@ -361,13 +337,13 @@ def classify(models_dir, regressor_name, classifiers, hmm_cassettes, return_prob
                         pred_probs = pred[pred_class_idx]
                         sorted_idx = np.argsort(-pred_probs)
                         prob_str = ', '.join('{0} ({1:.3f})'.format(name, prob) for name, prob in zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
-                        print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], prob_str))
+                        print('Cassette #{} -- {} classifier: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], prob_str))
 
                         pred_label = list(zip(pred_class_names[sorted_idx], pred_probs[sorted_idx]))
                     else:
                         pred = clf.predict(casc)
                         pred_label = encoder.inverse_transform(pred)[0]
-                        print('Cassette #{} -- {}: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], pred_label))
+                        print('Cassette #{} -- {} classifier: {}'.format(ci + 1, CLASSIFIERS_INV[clf_name], pred_label))
                     
                     output_defaultdict['predicted_label'].append(pred_label)
 
@@ -384,29 +360,30 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('-f', '--fasta', dest='fasta_file', help='Fasta file path', metavar='sequences.fa')
-    parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors (CART, ERT and SVM), default: ERT', default='ERT', metavar='reg')
-    parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers (CART, ERT and SVM), default: ERT', default='ERT', metavar='clf')
+    parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors (CART, ERT and SVM), default: ERT', default='ERT', metavar='reg', choices=['CART', 'ERT', 'SVM'])
+    parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers (CART, ERT and SVM), default: ERT', default='ERT', metavar='clf', choices=['CART', 'ERT', 'SVM'])
     parser.add_argument('-p', '--class-probabilities', dest='probability', action='store_true', help='Whether to return class probabilities')
-    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets (from HMM1 to HMM5), default: HMM3', metavar='HMM_set', default='HMM3')
-    parser.add_argument('-hp', '--hmmsearch-path', nargs='?', dest='hmmsearch_cmd', help='hmmsearch binary path, default: ./software/hmmer/hmmsearch', default=HMM_SEARCH)
+    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets (from HMM1 to HMM5), default: HMM1 HMM3 HMM5', metavar='HMM_set', default=['HMM1', 'HMM3', 'HMM5'], choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5'])
     parser.add_argument('-ho', '--hmmsearch-output-dir', nargs='?', dest='hmmsearch_output_dir', help='hmmsearch output folder (default: ./hmmsearch_output)', default='hmmsearch_output')
-    parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', help='cassette output folder, default: ./cassette', default='cassette')
-    parser.add_argument('-st', '--sequence-type', nargs='?', dest='sequence_type', default='protein', help='Sequence type (dna or protein), default: protein', metavar='seq_type')
-    parser.add_argument('-sc', '--sequence-completeness', nargs='?', dest='sequence_completeness', help='Sequence completeness (complete or partial), used only if sequence type is dna, default: complete', default='complete', metavar='seq_comp')
-    parser.add_argument('-m', '--mode', nargs='?', dest='run_mode', help='Run mode (classification, regression or mixed), default: classification', default='classification', metavar='mode')
+    parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', help='cassette output folder, default: ./cassette_output', default='cassette_output')
+    parser.add_argument('-st', '--sequence-type', nargs='?', dest='sequence_type', default='protein', help='Sequence type (dna or protein), default: protein', metavar='seq_type', choices=['dna', 'protein'])
+    parser.add_argument('-sc', '--sequence-completeness', nargs='?', dest='sequence_completeness', help='Sequence completeness (complete or partial), used only if sequence type is dna, default: complete', default='complete', metavar='seq_comp', choices=['complete', 'partial'])
+    parser.add_argument('-m', '--mode', nargs='?', dest='run_mode', help='Run mode (classification, regression or mixed), default: mixed', default='mixed', metavar='mode', choices=['classification', 'regression', 'mixed'])
     parser.add_argument('-o', '--output-file', nargs='?', dest='output_file', help='Where to store the results, default: ./CRISPRcasIdentifier_output.csv', default='CRISPRcasIdentifier_output.csv')
     args = parser.parse_args()
-    validate_args(args)
+
+    args.regressors = to_list(args.regressors)
+    args.classifiers = to_list(args.classifiers)
+    args.hmm_sets = to_list(args.hmm_sets)
+
+    if not os.path.exists(args.fasta_file):
+        raise FileNotFoundError('No such file {}'.format(args.fasta_file))
 
     if not os.path.exists(HMM_DIR):
-        print('Extracting', HMM_TAR_GZ)
-        with tarfile.open(HMM_TAR_GZ, 'r:gz') as tar:
-            tar.extractall()
+        extract_targz(HMM_TAR_GZ)
 
     if not os.path.exists(MODELS_DIR):
-        print('Extracting', MODELS_TAR_GZ)
-        with tarfile.open(MODELS_TAR_GZ, 'r:gz') as tar:
-            tar.extractall()
+        extract_targz(MODELS_TAR_GZ)
     
     if not os.path.exists(args.cassette_output_dir):
         os.mkdir(args.cassette_output_dir)
@@ -416,10 +393,12 @@ if __name__ == '__main__':
     
     if args.sequence_type == 'dna':
         print('Running prodigal on DNA sequences')
+        cmd_exists(PRODIGAL + ' -h')
         args.fasta_file = prodigal(PRODIGAL, args.fasta_file, args.sequence_completeness)
 
     print('Running hmmsearch (log and outputs stored in {})'.format(args.hmmsearch_output_dir))
-    hmmsearch(args.hmmsearch_cmd, args.fasta_file, HMM_DIR, args.hmm_sets, args.hmmsearch_output_dir)
+    cmd_exists(HMMSEARCH + ' -h')
+    hmmsearch(HMMSEARCH, args.fasta_file, HMM_DIR, args.hmm_sets, args.hmmsearch_output_dir)
 
     print('Annotating proteins')
     protein_df = build_initial_dataframe(args.fasta_file, args.sequence_type)

@@ -2,9 +2,13 @@
 
 CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas proteins. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.95 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.89 in our benchmarking against other available tools.
 
+## Citation
+
+If you use CRISPRcasIdentifier, please cite our paper: [CRISPRCasIdentifier: Machine learning for accurate identification and classification of CRISPR-Cas systems](https://www.biorxiv.org/content/10.1101/817619v1.abstract) Victor A. Padilha, Omer S. Alkhnbashi, Shiraz A. Shah, André C. P. L. F. de Carvalho, Rolf Backofen, Biorxiv, 2019, DOI: [10.1101/817619](https://doi.org/10.1101/817619).
+
 ## Installation and requirements
 
-CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers using [joblib.dump](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or libraries versions. For such, we recommend the use of our docker image or conda virtual environments. They make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
+CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers following the [scikit-learn's model persistence guideline](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or library versions. For such, we recommend the use of our docker image or a conda virtual environment. They make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
 ### First step: clone this repository
 
@@ -95,19 +99,17 @@ The available options are:
 
 * `-p` : returns class probabilities. When the probability output is not required, the ML models always return the label with the maximum probability value (independent of how high the value of this probability is). When using the `-p` option, we want CRISPRcasIdentifier to give some clues to the user about how well a test cassette agrees with different subtypes (given that some subtypes have some Cas proteins in common). _If the user wants to label a test example based on the probabilities, that must be done by assigning it to the subtype with the maximum probability value returned and not by using some threshold_. Finally, for a given test example, the probabilities sum up to one.
 
-* `-s HMM1 HMM2 ...` : list of HMM models to use, from HMM1 to HMM5 (default: HMM3).
-
-* `-hp` : hmmsearch binary path (default: `./software/hmmer/hmmsearch`).
+* `-s HMM1 HMM2 ...` : list of HMM models to use, from HMM1 to HMM5 (default: HMM1 HMM3 HMM5).
 
 * `-ho` : hmmsearch output directory (default: `./hmmsearch_output`).
 
-* `-co` : cassette output directory (default: `./cassette`).
+* `-co` : cassette output directory (default: `./cassette_output`).
 
-* `-st` : sequence type contained in input fasta file, either `protein` or `dna` (default: `protein`). If `-st` is set to `protein`, CRISPRcasIdentifier assumes that the input fasta file contains only one cassette. For such, the expected cassette length is up to 15 proteins (more than that might produce unexpected results). If `-st` is set to `dna`, CRISPRcasIdentifier tries to build the protein cassettes after extracting the protein sequences using the [Prodigal software](https://github.com/hyattpd/Prodigal) version 2.6.3 (unless the user is running our tool in a 32bit operating system, Prodigal is already included in the `software` folder and does not need to be installed by the user). In this case, CRISPRcasIdentifier may produce predictions for multiple cassettes. Also note that for DNA data, the option `-sc` _must_ also be set.
+* `-st` : sequence type contained in input fasta file, either `protein` or `dna` (default: `protein`). If `-st` is set to `protein`, CRISPRcasIdentifier assumes that the input fasta file contains only one cassette. For such, the expected cassette length is up to 15 proteins (more than that might produce unexpected results). If `-st` is set to `dna`, CRISPRcasIdentifier tries to build the protein cassettes after extracting the protein sequences using [Prodigal](https://github.com/hyattpd/Prodigal). In this case, CRISPRcasIdentifier may produce predictions for multiple cassettes. Also note that for DNA data, the option `-sc` _must_ also be set.
 
-* `-sc` : sequence completeness, either `complete` or `partial` (used only when `-st` is set to `dna`).
+* `-sc` : sequence completeness, either `complete` or `partial` (used only when `-st` is set to `dna`, default: `complete`).
 
-* `-m` : run mode, either `classification`, or `regression` or `mixed`.
+* `-m` : run mode, either `classification`, or `regression` or `mixed` (default: `mixed`).
 
 * `-o` : output csv file path (default: `CRISPRcasIdentifier_output.csv`).
 
@@ -124,7 +126,7 @@ We provide three simple examples in the `examples` folder:
 ## License (GPLv3)
 
     CRISPRcasIdentifier
-    Copyright (C) 2019 Victor Alexandre Padilha <victorpadilha@usp.br>,
+    Copyright (C) 2020 Victor Alexandre Padilha <victorpadilha@usp.br>,
                        Omer Salem Alkhnbashi <alkhanbo@informatik.uni-freiburg.de>,
                        Shiraz Ali Shah <shiraz.shah@dbac.dk>,
                        André Carlos Ponce de Leon Ferreira de Carvalho <andre@icmc.usp.br>,
