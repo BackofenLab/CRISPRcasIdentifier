@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 import itertools
 
+from pathlib import Path
 from collections import defaultdict
 
 # Project imports
@@ -36,14 +37,9 @@ from prodigal import prodigal
 from hmmsearch import hmmsearch
 from cas import CAS_SYNONYM_LIST, CORE
 
-SEQUENCE_TYPES = {'dna', 'protein'}
-SEQUENCE_COMPLETENESS = {'complete', 'partial'}
-RUN_MODES = {'classification', 'regression', 'mixed'}
 REGRESSORS = {'CART' : 'DecisionTreeRegressor', 'ERT' : 'ExtraTreesRegressor', 'SVM' : 'SVR'}
 CLASSIFIERS = {'CART' : 'DecisionTreeClassifier', 'ERT' : 'ExtraTreesClassifier', 'SVM' : 'SVC'}
 CLASSIFIERS_INV = {v : k for k, v in CLASSIFIERS.items()}
-N_HMM_SETS = 5
-HMM_SETS = {'HMM' + str(i + 1) for i in range(N_HMM_SETS)}
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 HMM_DIR = BASE_DIR + '/HMM_sets'
 MODELS_DIR = BASE_DIR + '/trained_models_2015'
@@ -359,17 +355,17 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('-f', '--fasta', dest='fasta_file', help='Fasta file path', metavar='sequences.fa')
-    parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors (CART, ERT and SVM), default: ERT', default='ERT', metavar='reg', choices=['CART', 'ERT', 'SVM'])
-    parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers (CART, ERT and SVM), default: ERT', default='ERT', metavar='clf', choices=['CART', 'ERT', 'SVM'])
-    parser.add_argument('-p', '--class-probabilities', dest='probability', action='store_true', help='Whether to return class probabilities')
-    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets (from HMM1 to HMM5), default: HMM1 HMM3 HMM5', metavar='HMM_set', default=['HMM1', 'HMM3', 'HMM5'], choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5'])
-    parser.add_argument('-ho', '--hmmsearch-output-dir', nargs='?', dest='hmmsearch_output_dir', help='hmmsearch output folder (default: ./hmmsearch_output)', default='hmmsearch_output')
-    parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', help='cassette output folder, default: ./cassette_output', default='cassette_output')
-    parser.add_argument('-st', '--sequence-type', nargs='?', dest='sequence_type', default='protein', help='Sequence type (dna or protein), default: protein', metavar='seq_type', choices=['dna', 'protein'])
-    parser.add_argument('-sc', '--sequence-completeness', nargs='?', dest='sequence_completeness', help='Sequence completeness (complete or partial), used only if sequence type is dna, default: complete', default='complete', metavar='seq_comp', choices=['complete', 'partial'])
-    parser.add_argument('-m', '--mode', nargs='?', dest='run_mode', help='Run mode (classification, regression or mixed), default: mixed', default='mixed', metavar='mode', choices=['classification', 'regression', 'mixed'])
-    parser.add_argument('-o', '--output-file', nargs='?', dest='output_file', help='Where to store the results, default: ./CRISPRcasIdentifier_output.csv', default='CRISPRcasIdentifier_output.csv')
+    parser.add_argument('-f', '--fasta', dest='fasta_file', help='Fasta file path (it can be either protein or DNA, see -st and -sc for details).', metavar='/path/to/file.fa')
+    parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors. Available options: CART, ERT or SVM (default: ERT).', default='ERT', metavar='reg1 reg2', choices=['CART', 'ERT', 'SVM'])
+    parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers. Available options: CART, ERT or SVM (default: ERT).', default='ERT', metavar='clf1 clf2', choices=['CART', 'ERT', 'SVM'])
+    parser.add_argument('-p', '--class-probabilities', dest='probability', action='store_true', help='Whether to return class probabilities.')
+    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets. Available options: HMM1 to HMM5 (default: HMM1 HMM3 HMM5).', metavar='HMMi HMMj', default=['HMM1', 'HMM3', 'HMM5'], choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5'])
+    parser.add_argument('-ho', '--hmmsearch-output-dir', nargs='?', dest='hmmsearch_output_dir', help='hmmsearch output folder (default: ./output/hmmsearch).', default='./output/hmmsearch')
+    parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', help='cassette output folder (default: ./output/cassette).', default='./output/cassette')
+    parser.add_argument('-st', '--sequence-type', nargs='?', dest='sequence_type', default='protein', help='Sequence type. Available options: dna or protein (default: protein).', metavar='seq_type', choices=['dna', 'protein'])
+    parser.add_argument('-sc', '--sequence-completeness', nargs='?', dest='sequence_completeness', help='Sequence completeness (used only if sequence type is dna). Available options: complete or partial (default: complete).', default='complete', metavar='seq_comp', choices=['complete', 'partial'])
+    parser.add_argument('-m', '--mode', nargs='?', dest='run_mode', help='Run mode. Available options: classification, regression or combined (default: combined).', default='combined', metavar='mode', choices=['classification', 'regression', 'combined'])
+    parser.add_argument('-o', '--output-file', nargs='?', dest='output_file', help='Where to store predictions (default: ./output/predictions.csv).', default='./output/predictions.csv')
     args = parser.parse_args()
 
     args.regressors = to_list(args.regressors)
@@ -386,10 +382,10 @@ if __name__ == '__main__':
         extract_targz(MODELS_TAR_GZ)
     
     if not os.path.exists(args.cassette_output_dir):
-        os.mkdir(args.cassette_output_dir)
+        Path(args.cassette_output_dir).mkdir(parents=True, exist_ok=True)
     
     if not os.path.exists(args.hmmsearch_output_dir):
-        os.mkdir(args.hmmsearch_output_dir)
+        Path(args.hmmsearch_output_dir).mkdir(parents=True, exist_ok=True)
     
     if args.sequence_type == 'dna':
         print('Running prodigal on DNA sequences')
@@ -420,7 +416,7 @@ if __name__ == '__main__':
             for reg in args.regressors:
                 hmm_cassettes_reg = predict_missings(MODELS_DIR, reg, hmm_features, hmm_cassettes, hmm_missings)
 
-                if args.run_mode == 'mixed':
+                if args.run_mode == 'combined':
                     print('Loading classifiers and running classification')
                     classify(MODELS_DIR, reg, classifiers, hmm_cassettes_reg, args.probability, hmm_missings, output_defaultdict)
 
