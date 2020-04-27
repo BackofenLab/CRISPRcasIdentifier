@@ -1,0 +1,2 @@
+Data2_2019_CRISPRcasIdentifier.tab contains full Infos about the data used to build HMM models, such as Gene identification, Gene order, Gene distance, Gene size, Cluster Id, Cluster size.
+Data1_2019_CRISPRcasIdentifier.tab provides full Infos about Gene identification, locations, strand, species (and strain), Refseq, model name, gene annotation.
