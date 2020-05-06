@@ -2,6 +2,7 @@
 
 CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas systems. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.95 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.89 in our benchmarking against other available tools.
 
+![](CRISPRcasIdenifier_thumbnail_image.png)
 ## Citation
 
 If you use CRISPRcasIdentifier, please cite our paper: [CRISPRCasIdentifier: Machine learning for accurate identification and classification of CRISPR-Cas systems](https://www.biorxiv.org/content/10.1101/817619v1.abstract) Victor A. Padilha, Omer S. Alkhnbashi, Shiraz A. Shah, André C. P. L. F. de Carvalho, Rolf Backofen, Biorxiv, 2019, DOI: [10.1101/817619](https://doi.org/10.1101/817619).
