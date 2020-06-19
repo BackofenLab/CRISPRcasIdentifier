@@ -6,7 +6,7 @@ CRISPRcasIdentifier is an effective machine learning approach for the identifica
 
 ## Citation
 
-If you use CRISPRcasIdentifier, please cite our paper: [CRISPRCasIdentifier: Machine learning for accurate identification and classification of CRISPR-Cas systems](https://www.biorxiv.org/content/10.1101/817619v1.abstract) Victor A. Padilha, Omer S. Alkhnbashi, Shiraz A. Shah, André C. P. L. F. de Carvalho, Rolf Backofen, Biorxiv, 2019, DOI: [10.1101/817619](https://doi.org/10.1101/817619).
+If you use CRISPRcasIdentifier, please cite our paper: [CRISPRCasIdentifier: Machine learning for accurate identification and classification of CRISPR-Cas systems](https://academic.oup.com/gigascience/article/9/6/giaa062/5858408) Victor A. Padilha, Omer S. Alkhnbashi, Shiraz A. Shah, André C. P. L. F. de Carvalho, Rolf Backofen, GigaScience, 2020, DOI: [10.1093/gigascience/giaa062](https://doi.org/10.1093/gigascience/giaa062).
 
 ## Installation and requirements
 
