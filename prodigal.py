@@ -26,11 +26,11 @@ import subprocess as sp
 import os
 
 def prodigal(prodigal_cmd, fasta_file, completeness):
-    meta = '-p meta' if completeness == 'partial' else ''
+    meta = ' -p meta ' if completeness == 'partial' else ''
     fasta_file_preffix = fasta_file.rsplit('.', 1)[0]
     output_fasta_file = fasta_file_preffix + '_proteins.fa'
     log_file = fasta_file_preffix + '_prodigal.log'
-    prodigal_cmd += ' -i {input_fasta}  -c -m -g 11 -p single -a {output_fasta} -q' + meta
+    prodigal_cmd += ' -i {input_fasta}  -c -m -g 11 -a {output_fasta} -q' + meta
     prodigal_cmd = prodigal_cmd.format(prodigal=prodigal_cmd, input_fasta=fasta_file, output_fasta=output_fasta_file)
     
     with open(log_file, 'w') as lf:
