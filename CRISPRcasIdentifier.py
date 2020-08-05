@@ -134,7 +134,7 @@ def add_bitscores(hmm_output_dir, protein_df, sequence_type):
                         id_second_part = hmm_result[-1].strip().split(';')[0]
                         id_ += '_' + id_second_part
                     
-                    if bitscore > protein_df.at[id_, 'bitscore']:
+                    if bitscore > protein_df.at[id_, 'bitscore'] and bitscore > 0.0:
                         protein_df.at[id_, 'bitscore'] = bitscore
                         protein_df.at[id_, 'annotation'] = annotation
     
