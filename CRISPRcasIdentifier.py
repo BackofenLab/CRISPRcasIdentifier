@@ -22,7 +22,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os, tarfile, glob
+import os, tarfile, glob, re
 import subprocess as sp
 import joblib
 import numpy as np
@@ -35,15 +35,15 @@ from collections import defaultdict
 # Project imports
 from prodigal import prodigal
 from hmmsearch import hmmsearch
-from cas import CAS_SYNONYM_LIST, CORE
+from cas import CAS_SYNONYM_LIST, CORE, CAS_PATTERN
 
 REGRESSORS = {'CART' : 'DecisionTreeRegressor', 'ERT' : 'ExtraTreesRegressor', 'SVM' : 'SVR'}
 CLASSIFIERS = {'CART' : 'DecisionTreeClassifier', 'ERT' : 'ExtraTreesClassifier', 'SVM' : 'SVC'}
 CLASSIFIERS_INV = {v : k for k, v in CLASSIFIERS.items()}
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 HMM_DIR = BASE_DIR + '/HMM_sets'
-MODELS_DIR = BASE_DIR + '/trained_models_2015'
-MODELS_TAR_GZ = BASE_DIR + '/trained_models_2015.tar.gz'
+MODELS_DIR = BASE_DIR + '/trained_models'
+MODELS_TAR_GZ = BASE_DIR + '/trained_models.tar.gz'
 HMM_TAR_GZ = BASE_DIR + '/HMM_sets.tar.gz'
 HMMSEARCH = 'hmmsearch'
 PRODIGAL = 'prodigal'
@@ -117,27 +117,32 @@ def add_bitscores(hmm_output_dir, protein_df, sequence_type):
     hmm_output_files = glob.glob(hmm_output_dir + '/*.tab')
 
     for file_path in hmm_output_files:
-        annotation = file_path.split('/')[-1].split('_')[0]
+        _, tab_file = file_path.rsplit('/', 1)
+        annotation = tab_file.split('_')[0].split('-')[0].lower()
+        annotation = re.match(CAS_PATTERN, annotation)
+
+        if annotation:
+            annotation = annotation.group()
         
-        if annotation in CAS_SYNONYM_LIST:
-            annotation = CAS_SYNONYM_LIST[annotation]
+            if annotation in CAS_SYNONYM_LIST:
+                annotation = CAS_SYNONYM_LIST[annotation]
 
-        with open(file_path, 'r') as f:
-            for line in f:
-                if not line.startswith('#'):
-                    hmm_result = line.strip().split()
+            with open(file_path, 'r') as f:
+                for line in f:
+                    if not line.startswith('#'):
+                        hmm_result = line.strip().split()
 
-                    id_ = hmm_result[0]
-                    bitscore = float(hmm_result[5])
+                        id_ = hmm_result[0]
+                        bitscore = float(hmm_result[5])
 
-                    if sequence_type == 'dna':
-                        id_second_part = hmm_result[-1].strip().split(';')[0]
-                        id_ += '_' + id_second_part
-                    
-                    if bitscore > protein_df.at[id_, 'bitscore'] and bitscore > 0.0:
-                        protein_df.at[id_, 'bitscore'] = bitscore
-                        protein_df.at[id_, 'annotation'] = annotation
-    
+                        if sequence_type == 'dna':
+                            id_second_part = hmm_result[-1].strip().split(';')[0]
+                            id_ += '_' + id_second_part
+                        
+                        if bitscore > protein_df.at[id_, 'bitscore'] and bitscore > 0.0:
+                            protein_df.at[id_, 'bitscore'] = bitscore
+                            protein_df.at[id_, 'annotation'] = annotation
+        
     return protein_df
 
 def build_cassettes(annotated_protein_dataframes, sequence_type, max_gap=2, min_proteins=2, max_nt_diff=500, cassette_output_dir=None, save_csv=False):
@@ -284,8 +289,10 @@ def predict_missings(models_dir, regressor, hmm_features, hmm_cassettes, hmm_mis
 
                     for i in range(n_miss):
                         j, f, pred = predictions[i]
-                        print('{0} missing bit-score prediction for cassette #{1}, {2} and {3} ({4}/{5}): {6:.3f}'.format(regressor, id_ + 1, hmm, f, i + 1, n_miss, pred))
-                        cassette[j] = pred # because cassette is a 2d 1 x m array
+
+                        if pred > 0.0:
+                            print('{0} missing bitscore prediction for cassette #{1}, {2} and {3} ({4}/{5}): {6:.6f}'.format(regressor, id_ + 1, hmm, f, i + 1, n_miss, pred))
+                            cassette[j] = pred # because cassette is a 2d 1 x m array
                 
                 filled_cassettes[hmm].append(cassette)
             
@@ -359,7 +366,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors. Available options: CART, ERT or SVM (default: ERT).', default='ERT', metavar='reg1 reg2', choices=['CART', 'ERT', 'SVM'])
     parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers. Available options: CART, ERT or SVM (default: ERT).', default='ERT', metavar='clf1 clf2', choices=['CART', 'ERT', 'SVM'])
     parser.add_argument('-p', '--class-probabilities', dest='probability', action='store_true', help='Whether to return class probabilities.')
-    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets. Available options: HMM1 to HMM5 (default: HMM1 HMM3 HMM5).', metavar='HMMi HMMj', default=['HMM1', 'HMM3', 'HMM5'], choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5'])
+    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets. Available options: HMM1 to HMM5 (default: HMM1 HMM3 HMM5).', metavar='HMMi HMMj', default=['HMM1', 'HMM3', 'HMM5'], choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5', 'HMM2019'])
     parser.add_argument('-ho', '--hmmsearch-output-dir', nargs='?', dest='hmmsearch_output_dir', help='hmmsearch output folder (default: ./output/hmmsearch).', default='./output/hmmsearch')
     parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', help='cassette output folder (default: ./output/cassette).', default='./output/cassette')
     parser.add_argument('-st', '--sequence-type', nargs='?', dest='sequence_type', default='protein', help='Sequence type. Available options: dna or protein (default: protein).', metavar='seq_type', choices=['dna', 'protein'])
