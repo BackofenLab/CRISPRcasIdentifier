@@ -1,6 +1,6 @@
-![](CRISPRcasIdenifier_thumbnail_image.png)
+![](CRISPRcasIdentifier_thumbnail_image.png)
 
-[![tag entry](https://img.shields.io/github/v/tag/BackofenLab/CRISPRcasIdentifier)](https://github.com/BackofenLab/CRISPRcasIdentifier/releases/tag/v1.0.0) [![RRID entry](https://img.shields.io/badge/RRID-SCR__018296-blue.svg)](https://scicrunch.org/scicrunch/Resources/record/nlx_144509-1/SCR_018296/resolver?q=SCR_018296&l=SCR_018296) [![bio.tools entry](https://img.shields.io/badge/bio.tools-crisprcasidentifier-blue.svg)](https://bio.tools/crisprcasidentifier)
+[![tag entry](https://img.shields.io/github/v/tag/BackofenLab/CRISPRcasIdentifier)](https://github.com/BackofenLab/CRISPRcasIdentifier/releases/tag/v1.1.0) [![RRID entry](https://img.shields.io/badge/RRID-SCR__018296-blue.svg)](https://scicrunch.org/scicrunch/Resources/record/nlx_144509-1/SCR_018296/resolver?q=SCR_018296&l=SCR_018296) [![bio.tools entry](https://img.shields.io/badge/bio.tools-crisprcasidentifier-blue.svg)](https://bio.tools/crisprcasidentifier)
 
 CRISPRcasIdentifier is an effective machine learning approach for the identification and classification of CRISPR-Cas systems. It consists of a holistic strategy which allows us to: (i) combine regression and classification approaches for improving the quality of the input protein cassettes and predicting their subtypes with high accuracy; (ii) to detect signature genes for the different subtypes; (iii) to extract several types of information for each protein, such as potential rules that reveal the identity of neighboring genes; and (iv) define a complete and extensible framework able to integrate newly discovered Cas proteins and CRISPR subtypes. We achieve balanced accuracy scores above 0.95 in the classification experiment of CRISPR subtypes, mean absolute error values below 0.05 for the prediction of the normalized bit-score of different Cas proteins and a balanced accuracy of 0.89 in our benchmarking against other available tools.
 
@@ -12,15 +12,16 @@ If you use CRISPRcasIdentifier, please cite our paper: [CRISPRCasIdentifier: Mac
 
 CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers following the [model persistence guideline from scikit-learn](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or library versions. For such, we recommend the use of our docker image or a conda virtual environment. They make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
 
-### First step: clone this repository
+### First step: download the last version of the tool and extract it
 
 ```
-git clone https://github.com/BackofenLab/CRISPRcasIdentifier.git
+wget https://github.com/BackofenLab/CRISPRcasIdentifier/archive/v1.1.0.tar.gz
+tar -xzf v1.1.0.tar.gz
 ```
 
 ### Second step: download the Hidden Markov (HMM) and Machine Learning (ML) models
 
-Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/166bh1sAjoB9kW5pn8YrEuEWrsM2QDV78/view?usp=sharing) and [here](https://drive.google.com/file/d/1ZOR1e-wIb_rxtCiU3OaBVdrHrup1svq3/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's folder. It is not necessary to extract them, since the tool will do that the first time it is run.
+Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/1YbTxkn9KuJP2D7U1-6kL1Yimu_4RqSl1/view?usp=sharing) and [here](https://drive.google.com/file/d/1Nc5o6QVB6QxMxpQjmLQcbwQwkRLk-thM/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's directory. It is not necessary to extract them, since the tool will do that the first time it is run.
 
 Next, you can choose which third step to follow: either [using a docker container](#third-step-docker) or [using a conda environment](#third-step-conda).
 
@@ -34,31 +35,31 @@ First, you need to install docker (please refer to its [installation guideline](
 docker pull padilha/crispr-cas-identifier:1.0.0
 ```
 
-Inside CRISPRcasIdentifier's folder, run the docker image.
+Inside CRISPRcasIdentifier's directory, run the docker image.
 
 ```
 docker run --rm -v "$(pwd):/home/crispr/CRISPRcasIdentifier" -it padilha/crispr-cas-identifier:1.0.0 /bin/bash
 ```
 
-Since we are using the volume option (-v), CRISPRcasIdentifier's folder will be shared between the host machine and the docker container. Thus, there is no need to move files from one to the other.
+Since we are using the volume option (-v), CRISPRcasIdentifier's directory will be shared between the host machine and the docker container. Thus, there is no need to move files from one to the other.
 
 After this step, everything should be set up and you can skip to [How to use](#how-to-use).
 
 #### Build the image
 
-Inside CRISPRcasIdentifier's folder, build the image from the Dockerfile.
+Inside CRISPRcasIdentifier's directory, build the image from the Dockerfile.
 
 ```
 docker build -t crispr-cas-identifier .
 ```
 
-Inside CRISPRcasIdentifier's folder, run the docker image.
+Inside CRISPRcasIdentifier's directory, run the docker image.
 
 ```
 docker run --rm -v "$(pwd):/home/crispr/CRISPRcasIdentifier" -it crispr-cas-identifier:latest /bin/bash
 ```
 
-Since we are using the volume option (-v), CRISPRcasIdentifier's folder will be shared between the host machine and the docker container. Thus, there is no need to move files from one to the other.
+Since we are using the volume option (-v), CRISPRcasIdentifier's directory will be shared between the host machine and the docker container. Thus, there is no need to move files from one to the other.
 
 After this step, everything should be set up and you can skip to [How to use](#how-to-use).
 
@@ -107,11 +108,11 @@ The available options are:
 
 * `-p` : returns class probabilities. When the probability output is not required, the ML models always return the label with the maximum probability value (independent of how high the value of this probability is). When using the `-p` option, we want CRISPRcasIdentifier to give some clues to the user about how well a test cassette agrees with different subtypes (given that some subtypes have some Cas proteins in common). _If the user wants to label a test example based on the probabilities, that must be done by assigning it to the subtype with the maximum probability value returned and not by using some threshold_. Finally, for a given test example, the probabilities sum up to one.
 
-* `-s HMMi HMMj ...` : list of HMM models to use, available options: HMM1 to HMM5 (default: HMM1 HMM3 HMM5).
+* `-s HMMi HMMj ...` : list of HMM models to use, available options: HMM1 to HMM5 and HMM2019 (default: HMM2019).
 
-* `-ho` : hmmsearch output folder (default: `./output/hmmsearch`). If the folder does not exist, it is created.
+* `-ho` : hmmsearch output directory (default: `./output/hmmsearch`). If the directory does not exist, it is created.
 
-* `-co` : cassette output folder (default: `./output/cassette`). If the folder does not exist, it is created.
+* `-co` : cassette output directory (default: `./output/cassette`). If the directory does not exist, it is created.
 
 * `-st` : sequence type contained in input fasta file. Available options: `protein` or `dna` (default: `protein`). If `-st` is set to `protein`, CRISPRcasIdentifier assumes that the input fasta file contains only one cassette. For such, the expected cassette length is up to 15 proteins (more than that might produce unexpected results). If `-st` is set to `dna`, CRISPRcasIdentifier tries to build the protein cassettes after extracting the protein sequences using [Prodigal](https://github.com/hyattpd/Prodigal). In this case, CRISPRcasIdentifier may produce predictions for multiple cassettes. Also note that for DNA data, the option `-sc` _must_ also be set.
 
@@ -123,7 +124,7 @@ The available options are:
 
 ## Examples
 
-We provide three simple examples in the `examples` folder:
+We provide three simple examples in the `examples` directory:
 
 * `NC_013722.fasta` : DNA example. That must be run as `python CRISPRcasIdentifier.py -f examples/NC_013722.fasta -st dna -sc complete`
 

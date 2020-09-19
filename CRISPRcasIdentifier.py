@@ -286,6 +286,7 @@ def predict_missings(models_dir, regressor, hmm_features, hmm_cassettes, hmm_mis
                         predictions.append((j, f, pred))
 
                     predictions = sorted(predictions, key=lambda x : -x[-1])
+                    n_miss = min(n_miss, len(predictions))
 
                     for i in range(n_miss):
                         j, f, pred = predictions[i]
@@ -366,7 +367,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--regressors', nargs='+', dest='regressors', help='List of regressors. Available options: CART, ERT or SVM (default: ERT).', default='ERT', metavar='reg1 reg2', choices=['CART', 'ERT', 'SVM'])
     parser.add_argument('-c', '--classifiers', nargs='+', dest='classifiers', help='List of classifiers. Available options: CART, ERT or SVM (default: ERT).', default='ERT', metavar='clf1 clf2', choices=['CART', 'ERT', 'SVM'])
     parser.add_argument('-p', '--class-probabilities', dest='probability', action='store_true', help='Whether to return class probabilities.')
-    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets. Available options: HMM1 to HMM5 (default: HMM1 HMM3 HMM5).', metavar='HMMi HMMj', default=['HMM1', 'HMM3', 'HMM5'], choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5', 'HMM2019'])
+    parser.add_argument('-s', '--hmm-sets', nargs='+', dest='hmm_sets', help='List of HMM sets. Available options: HMM1 to HMM5 and HMM2019 (default: HMM2019).', metavar='HMMi HMMj', default='HMM2019', choices=['HMM1', 'HMM2', 'HMM3', 'HMM4', 'HMM5', 'HMM2019'])
     parser.add_argument('-ho', '--hmmsearch-output-dir', nargs='?', dest='hmmsearch_output_dir', help='hmmsearch output folder (default: ./output/hmmsearch).', default='./output/hmmsearch')
     parser.add_argument('-co', '--cassette-output-dir', nargs='?', dest='cassette_output_dir', help='cassette output folder (default: ./output/cassette).', default='./output/cassette')
     parser.add_argument('-st', '--sequence-type', nargs='?', dest='sequence_type', default='protein', help='Sequence type. Available options: dna or protein (default: protein).', metavar='seq_type', choices=['dna', 'protein'])
