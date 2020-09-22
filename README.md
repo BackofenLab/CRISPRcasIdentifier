@@ -8,6 +8,12 @@ CRISPRcasIdentifier is an effective machine learning approach for the identifica
 
 If you use CRISPRcasIdentifier, please cite our paper: [CRISPRCasIdentifier: Machine learning for accurate identification and classification of CRISPR-Cas systems](https://academic.oup.com/gigascience/article/9/6/giaa062/5858408) Victor A. Padilha, Omer S. Alkhnbashi, Shiraz A. Shah, André C. P. L. F. de Carvalho, Rolf Backofen, GigaScience, 2020, DOI: [10.1093/gigascience/giaa062](https://doi.org/10.1093/gigascience/giaa062).
 
+## Releases
+
+**Version 1.1.0:** includes HMM and Machine Learning (ML) models trained on the same datasets from v1.0.0 and the most recent dataset published by [Makarova (2019)](https://www.nature.com/articles/s41579-019-0299-x). These models are now the default parameters of the tool (if you want to use the HMM and ML models from the previous version, please read about the `-s` parameter in [How to use](#how-to-use)).
+
+**Version 1.0.0:** includes HMM and Machine Learning models trained on the datasets published by [Makarova et al (2015)](https://www.nature.com/articles/nrmicro3569), [Shmakov et al (2015)](https://www.sciencedirect.com/science/article/pii/S1097276515007753) and [Shmakov et al(2017)](https://www.nature.com/articles/nrmicro.2016.184). This is the paper submission version.
+
 ## Installation and requirements
 
 CRISPRcasIdentifier has been tested with Python 3.7.6. To run it, we recommend installing the same library versions we used. Since we exported our classifiers following the [model persistence guideline from scikit-learn](https://scikit-learn.org/stable/modules/model_persistence.html), it is not guaranteed that they will work properly if loaded using other Python and/or library versions. For such, we recommend the use of our docker image or a conda virtual environment. They make it easy to install the correct Python and library dependencies without affecting the whole operating system (see below).
@@ -108,7 +114,7 @@ The available options are:
 
 * `-p` : returns class probabilities. When the probability output is not required, the ML models always return the label with the maximum probability value (independent of how high the value of this probability is). When using the `-p` option, we want CRISPRcasIdentifier to give some clues to the user about how well a test cassette agrees with different subtypes (given that some subtypes have some Cas proteins in common). _If the user wants to label a test example based on the probabilities, that must be done by assigning it to the subtype with the maximum probability value returned and not by using some threshold_. Finally, for a given test example, the probabilities sum up to one.
 
-* `-s HMMi HMMj ...` : list of HMM models to use, available options: HMM1 to HMM5 and HMM2019 (default: HMM2019).
+* `-s HMMi HMMj ...` : list of HMM models to use, available options: HMM1 to HMM5 and HMM2019 (default: HMM2019). The models HMM1 to HMM5 are the ones that were originally used in our paper. HMM2019 consists on the HMM models that were obtained from the most recent dataset by [Makarova (2019)](https://www.nature.com/articles/s41579-019-0299-x). Setting this parameter is enough for the tool to know which ML models should be used.
 
 * `-ho` : hmmsearch output directory (default: `./output/hmmsearch`). If the directory does not exist, it is created.
 
