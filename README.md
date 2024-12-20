@@ -29,12 +29,17 @@ tar -xzf v1.1.0.tar.gz
 
 Due to GitHub's file size constraints, we made our HMM and ML models available in Google Drive. You can download them [here](https://drive.google.com/file/d/1YbTxkn9KuJP2D7U1-6kL1Yimu_4RqSl1/view?usp=sharing) and [here](https://drive.google.com/file/d/1Nc5o6QVB6QxMxpQjmLQcbwQwkRLk-thM/view?usp=sharing). Save both tar.gz files inside CRISPRcasIdentifier's directory. It is not necessary to extract them, since the tool will do that the first time it is run.
 
-From commandline, this an be done using the [`gdown`]() tool.
+From commandline, this can be done using the [`gdown`](https://github.com/wkentaro/gdown) tool.
 
 ```sh
+# install google drive downloader
 pip install gdown
+# downloading tar.gz files
 gdown --fuzzy https://drive.google.com/file/d/1YbTxkn9KuJP2D7U1-6kL1Yimu_4RqSl1/view?usp=sharing
 gdown --fuzzy https://drive.google.com/file/d/1Nc5o6QVB6QxMxpQjmLQcbwQwkRLk-thM/view?usp=sharing
+# uncompress files
+tar -xzf HMM_sets.tar.gz
+tar -xzf trained_models.tar.gz
 ```
 
 
